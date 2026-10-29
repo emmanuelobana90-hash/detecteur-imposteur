@@ -212,6 +212,81 @@
       margin: 18px 0;
     }
 
+    .verdict-card {
+      position: relative;
+      overflow: hidden;
+      margin: 22px 0;
+      padding: 22px;
+      border: 1px solid #3b82f6;
+      border-radius: 18px;
+      background: radial-gradient(ellipse at top right, #1d4ed8 0%, #10172b 42%, #070b14 100%);
+      color: #f8fafc;
+      text-align: center;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, .35);
+    }
+
+    .card-brand {
+      color: #93c5fd;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 2px;
+    }
+
+    #cardPortrait {
+      display: block;
+      width: 100%;
+      max-height: 300px;
+      object-fit: contain;
+      margin: 16px auto;
+      border-radius: 12px;
+    }
+
+    .card-case {
+      color: #bfdbfe;
+      font-size: 10px;
+      letter-spacing: 2px;
+    }
+
+    .card-score {
+      display: flex;
+      justify-content: center;
+      align-items: baseline;
+      gap: 5px;
+      margin: 12px 0;
+      color: #60a5fa;
+      font-size: 64px;
+      line-height: 1;
+      font-weight: 950;
+    }
+
+    .card-score span:last-child {
+      color: #cbd5e1;
+      font-size: 22px;
+    }
+
+    #cardVerdict {
+      margin: 12px 0;
+      font-size: 23px;
+      line-height: 1.15;
+    }
+
+    .card-caption {
+      color: #93c5fd;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 3px;
+    }
+
+    .card-signature {
+      margin-top: 20px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(147, 197, 253, .35);
+      color: #e2e8f0;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 2px;
+    }
+
     .verdict-title {
       font-size: 27px;
       margin-bottom: 8px;
@@ -310,6 +385,19 @@
         <p id="verdictDescription"></p>
 
         <div class="divider"></div>
+
+        <div id="verdictCard" class="verdict-card">
+          <div class="card-brand">LE PROCUREUR PROVOCATEUR</div>
+          <img id="cardPortrait" src="isagi-card.jpg" alt="Isagi Yoichi">
+          <div class="card-case">AFFAIRE Nº 001 · BLUE LOCK</div>
+          <div class="card-score"><span id="cardScore">0</span><span>/100</span></div>
+          <h3 id="cardVerdict">Verdict en attente</h3>
+          <p class="card-caption">GÉNIE OU IMPOSTEUR ?</p>
+          <div class="card-signature">LE PROCUREUR PROVOCATEUR</div>
+        </div>
+
+        <button class="btn secondary" id="downloadCard">Télécharger la carte PNG</button>
+        <button class="btn" id="shareCard">Partager la carte</button>
 
         <p class="notice">
           Ce score reflète tes réponses, pas une vérité officielle sur Isagi.
@@ -464,6 +552,9 @@
       document.getElementById("verdictTitle").textContent = title;
       document.getElementById("verdictDescription").textContent = description;
 
+      document.getElementById("cardScore").textContent = finalScore;
+      document.getElementById("cardVerdict").textContent = title;
+
       showScreen("result");
     }
 
@@ -526,6 +617,126 @@
         if (error.name !== "AbortError") {
           alert("Le partage n'a pas fonctionné. Essaie le bouton Copier.");
         }
+      }
+    });
+
+    async function generateVerdictPNG() {
+      const image = document.getElementById("cardPortrait");
+      if (!image.complete || image.naturalWidth === 0) {
+        await new Promise((resolve, reject) => {
+          image.onload = resolve;
+          image.onerror = () => reject(new Error("Image Isagi introuvable"));
+        });
+      }
+
+      const canvas = document.createElement("canvas");
+      canvas.width = 900;
+      canvas.height = 1400;
+      const ctx = canvas.getContext("2d");
+
+      const bg = ctx.createLinearGradient(0, 0, 900, 1400);
+      bg.addColorStop(0, "#172554");
+      bg.addColorStop(0.48, "#0b1120");
+      bg.addColorStop(1, "#030712");
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.strokeStyle = "#3b82f6";
+      ctx.lineWidth = 5;
+      ctx.strokeRect(24, 24, 852, 1352);
+
+      ctx.textAlign = "center";
+      ctx.fillStyle = "#93c5fd";
+      ctx.font = "bold 27px sans-serif";
+      ctx.fillText("LE PROCUREUR PROVOCATEUR", 450, 82);
+
+      ctx.fillStyle = "#bfdbfe";
+      ctx.font = "22px sans-serif";
+      ctx.fillText("AFFAIRE Nº 001 · BLUE LOCK", 450, 125);
+
+      const maxW = 780;
+      const maxH = 700;
+      const scale = Math.min(maxW / image.naturalWidth, maxH / image.naturalHeight);
+      const iw = image.naturalWidth * scale;
+      const ih = image.naturalHeight * scale;
+      ctx.drawImage(image, (900 - iw) / 2, 155 + (maxH - ih) / 2, iw, ih);
+
+      ctx.fillStyle = "#60a5fa";
+      ctx.font = "bold 140px sans-serif";
+      ctx.fillText(String(finalScore), 390, 1030);
+
+      ctx.fillStyle = "#cbd5e1";
+      ctx.font = "bold 44px sans-serif";
+      ctx.fillText("/100", 570, 1028);
+
+      ctx.fillStyle = "#f8fafc";
+      ctx.font = "bold 38px sans-serif";
+      const title = document.getElementById("verdictTitle").textContent;
+      const words = title.split(" ");
+      let line = "";
+      let y = 1110;
+      for (const word of words) {
+        const test = line ? line + " " + word : word;
+        if (ctx.measureText(test).width > 780 && line) {
+          ctx.fillText(line, 450, y);
+          line = word;
+          y += 48;
+        } else {
+          line = test;
+        }
+      }
+      if (line) ctx.fillText(line, 450, y);
+
+      ctx.fillStyle = "#93c5fd";
+      ctx.font = "bold 23px sans-serif";
+      ctx.fillText("GÉNIE OU IMPOSTEUR ?", 450, 1240);
+
+      ctx.strokeStyle = "#334155";
+      ctx.beginPath();
+      ctx.moveTo(90, 1270);
+      ctx.lineTo(810, 1270);
+      ctx.stroke();
+
+      ctx.fillStyle = "#e2e8f0";
+      ctx.font = "bold 22px sans-serif";
+      ctx.fillText("LE PROCUREUR PROVOCATEUR", 450, 1315);
+
+      return new Promise((resolve, reject) => {
+        canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error("Création PNG impossible")), "image/png");
+      });
+    }
+
+    document.getElementById("downloadCard").addEventListener("click", async () => {
+      try {
+        const blob = await generateVerdictPNG();
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "verdict-isagi.png";
+        link.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      } catch (error) {
+        alert("Impossible de créer la carte. Vérifie que l’image d’Isagi est chargée.");
+      }
+    });
+
+    document.getElementById("shareCard").addEventListener("click", async () => {
+      try {
+        const blob = await generateVerdictPNG();
+        const file = new File([blob], "verdict-isagi.png", { type: "image/png" });
+        if (navigator.canShare && navigator.canShare({ files: [file] }) && navigator.share) {
+          await navigator.share({ title: "Mon verdict sur Isagi", text: "Et toi, tu l’aurais condamné ou défendu ?", files: [file] });
+        } else {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = "verdict-isagi.png";
+          link.click();
+          setTimeout(() => URL.revokeObjectURL(url), 1000);
+          alert("Le partage direct d’image n’est pas pris en charge ici : la carte a été téléchargée.");
+        }
+      } catch (error) {
+        if (error.name !== "AbortError") alert("Le partage a échoué. Essaie le téléchargement PNG.");
       }
     });
 
