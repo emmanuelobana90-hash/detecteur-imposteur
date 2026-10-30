@@ -1,751 +1,402 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#10131c">
-  <title>Le Détecteur d'imposteurs — Isagi</title>
-
+  <title>Le Procureur — Génie ou imposteur ?</title>
   <style>
-    :root {
-      color-scheme: dark;
-      --bg: #10131c;
-      --panel: #191e2a;
-      --text: #f5f5f7;
-      --muted: #a7adbd;
-      --red: #f04452;
-      --line: #303748;
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: radial-gradient(ellipse at top, #252c3d, var(--bg) 65%);
-      color: var(--text);
-      font-family: system-ui, -apple-system, sans-serif;
-      line-height: 1.5;
-    }
-
-    button { font: inherit; cursor: pointer; }
-
-    .wrap {
-      width: min(100% - 32px, 620px);
-      margin: auto;
-      padding: 24px 0 40px;
-    }
-
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      padding-bottom: 22px;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .brand {
-      font-size: 13px;
-      font-weight: 900;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-    }
-
-    .brand span { color: var(--red); }
-
-    .tag {
-      border: 1px solid var(--red);
-      color: #ff8b94;
-      padding: 4px 8px;
-      font-size: 10px;
-      letter-spacing: 1px;
-      font-weight: 800;
-    }
-
-    .eyebrow {
-      color: var(--red);
-      font-size: 11px;
-      font-weight: 900;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-    }
-
-    h1 {
-      font-size: clamp(32px, 9vw, 52px);
-      line-height: 1.05;
-      margin: 14px 0;
-      letter-spacing: -1.5px;
-    }
-
-    h2 { line-height: 1.2; }
-    p { color: var(--muted); }
-
-    .panel {
-      background: rgba(25, 30, 42, .94);
-      border: 1px solid var(--line);
-      padding: 22px;
-      border-radius: 14px;
-      margin-top: 22px;
-    }
-
-    .case-number {
-      color: var(--red);
-      font-weight: 900;
-      letter-spacing: 2px;
-      font-size: 12px;
-    }
-
-    .isagi-photo {
-      display: block;
-      width: 100%;
-      max-height: 280px;
-      object-fit: contain;
-      border-radius: 14px;
-      margin: 18px auto;
-      background: #111827;
-    }
-
-    .case-title {
-      font-size: 25px;
-      margin: 8px 0;
-    }
-
-    .divider {
-      height: 1px;
-      background: var(--line);
-      margin: 20px 0;
-    }
-
-    .btn {
-      display: block;
-      width: 100%;
-      padding: 14px 16px;
-      border-radius: 8px;
-      border: 1px solid var(--line);
-      background: #222938;
-      color: var(--text);
-      font-weight: 800;
-      text-align: center;
-      margin-top: 10px;
-    }
-
-    .btn.primary {
-      background: var(--red);
-      border-color: var(--red);
-      color: white;
-    }
-
-    .btn:disabled {
-      opacity: .35;
-      cursor: not-allowed;
-    }
-
-    .btn.secondary { background: transparent; }
-
-    .progress-track {
-      height: 5px;
-      background: #303748;
-      border-radius: 5px;
-      overflow: hidden;
-      margin: 14px 0 22px;
-    }
-
-    .progress-bar {
-      height: 100%;
-      width: 0;
-      background: var(--red);
-      transition: width .2s;
-    }
-
-    .question-count {
-      font-size: 12px;
-      color: var(--muted);
-      font-weight: 800;
-      letter-spacing: 1px;
-    }
-
-    .question {
-      font-size: 24px;
-      margin: 12px 0 20px;
-    }
-
-    .answer {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      padding: 14px;
-      margin-top: 10px;
-      border: 1px solid var(--line);
-      border-radius: 9px;
-      background: #151a25;
-      cursor: pointer;
-    }
-
-    .answer.selected {
-      border-color: var(--red);
-      background: #34202a;
-    }
-
-    .answer input {
-      margin-top: 5px;
-      accent-color: var(--red);
-    }
-
-    .answer span { color: var(--text); }
-
-    .nav {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    .nav .btn { margin: 0; }
-
-    .score {
-      font-size: clamp(58px, 17vw, 88px);
-      line-height: 1;
-      font-weight: 950;
-      color: var(--red);
-      letter-spacing: -4px;
-      margin: 18px 0;
-    }
-
-    .verdict-card {
-      position: relative;
-      overflow: hidden;
-      margin: 22px 0;
-      padding: 22px;
-      border: 1px solid #3b82f6;
-      border-radius: 18px;
-      background: radial-gradient(ellipse at top right, #1d4ed8 0%, #10172b 42%, #070b14 100%);
-      color: #f8fafc;
-      text-align: center;
-      box-shadow: 0 12px 35px rgba(0, 0, 0, .35);
-    }
-
-    .card-brand {
-      color: #93c5fd;
-      font-size: 11px;
-      font-weight: 900;
-      letter-spacing: 2px;
-    }
-
-    #cardPortrait {
-      display: block;
-      width: 100%;
-      max-height: 300px;
-      object-fit: contain;
-      margin: 16px auto;
-      border-radius: 12px;
-    }
-
-    .card-case {
-      color: #bfdbfe;
-      font-size: 10px;
-      letter-spacing: 2px;
-    }
-
-    .card-score {
-      display: flex;
-      justify-content: center;
-      align-items: baseline;
-      gap: 5px;
-      margin: 12px 0;
-      color: #60a5fa;
-      font-size: 64px;
-      line-height: 1;
-      font-weight: 950;
-    }
-
-    .card-score span:last-child {
-      color: #cbd5e1;
-      font-size: 22px;
-    }
-
-    #cardVerdict {
-      margin: 12px 0;
-      font-size: 23px;
-      line-height: 1.15;
-    }
-
-    .card-caption {
-      color: #93c5fd;
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 3px;
-    }
-
-    .card-signature {
-      margin-top: 20px;
-      padding-top: 14px;
-      border-top: 1px solid rgba(147, 197, 253, .35);
-      color: #e2e8f0;
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: 2px;
-    }
-
-    .verdict-title {
-      font-size: 27px;
-      margin-bottom: 8px;
-    }
-
-    .notice {
-      font-size: 12px;
-      border-left: 3px solid var(--red);
-      padding-left: 12px;
-    }
-
-    footer {
-      margin-top: 32px;
-      padding-top: 18px;
-      border-top: 1px solid var(--line);
-      text-align: center;
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    [hidden] { display: none !important; }
+    :root{color-scheme:dark;--bg:#10131c;--panel:#191e2a;--text:#f5f5f7;--muted:#a7adbd;--red:#f04452;--line:#303748}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;background:radial-gradient(ellipse at top,#252c3d,var(--bg) 65%);color:var(--text);font-family:system-ui,-apple-system,sans-serif;line-height:1.5}
+    button{font:inherit;cursor:pointer}
+    .wrap{width:min(100% - 32px,620px);margin:auto;padding:24px 0 40px}
+    header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-bottom:22px;border-bottom:1px solid var(--line)}
+    .brand{font-size:13px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase}.brand span,.eyebrow,.case-number{color:var(--red)}
+    .tag{border:1px solid var(--red);color:#ff8b94;padding:4px 8px;font-size:10px;letter-spacing:1px;font-weight:800}
+    .eyebrow{font-size:11px;font-weight:900;letter-spacing:2px;text-transform:uppercase}
+    h1{font-size:clamp(32px,9vw,52px);line-height:1.05;margin:14px 0;letter-spacing:-1.5px}
+    h2{line-height:1.2}p{color:var(--muted)}
+    .panel{background:rgba(25,30,42,.94);border:1px solid var(--line);padding:22px;border-radius:14px;margin-top:22px}
+    .case-number{font-weight:900;letter-spacing:2px;font-size:12px}
+    .hero-photo{display:block;width:100%;max-height:280px;object-fit:contain;border-radius:14px;margin:18px auto;background:#111827}
+    .case-title{font-size:25px;margin:8px 0}
+    .divider{height:1px;background:var(--line);margin:20px 0}
+    .btn{display:block;width:100%;padding:14px 16px;border-radius:8px;border:1px solid var(--line);background:#222938;color:var(--text);font-weight:800;text-align:center;margin-top:10px}
+    .btn.primary{background:var(--red);border-color:var(--red);color:white}.btn.secondary{background:transparent}
+    .btn:disabled{opacity:.35;cursor:not-allowed}
+    .dossier-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .dossier-card{border:1px solid var(--line);background:#151a25;border-radius:10px;padding:12px}
+    .dossier-card img{width:100%;height:150px;object-fit:contain}
+    .dossier-card h3{margin:8px 0 0}
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}
+    .stat{background:#151a25;border:1px solid var(--line);border-radius:9px;padding:10px 4px}
+    .stat strong{display:block;color:var(--red);font-size:24px}.stat span{font-size:10px;color:var(--muted);text-transform:uppercase}
+    .progress-track{height:5px;background:#303748;border-radius:5px;overflow:hidden;margin:14px 0 22px}
+    .progress-bar{height:100%;width:0;background:var(--red);transition:width .2s}
+    .question-count{font-size:12px;color:var(--muted);font-weight:800;letter-spacing:1px}
+    .question{font-size:24px;margin:12px 0 20px}
+    .answer{display:flex;align-items:flex-start;gap:12px;padding:14px;margin-top:10px;border:1px solid var(--line);border-radius:9px;background:#151a25;cursor:pointer}
+    .answer.selected{border-color:var(--red);background:#34202a}.answer input{margin-top:5px;accent-color:var(--red)}.answer span{color:var(--text)}
+    .nav{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}.nav .btn{margin:0}
+    .score{font-size:clamp(58px,17vw,88px);line-height:1;font-weight:950;color:var(--red);letter-spacing:-4px;margin:18px 0}
+    .verdict-card{position:relative;overflow:hidden;margin:22px 0;padding:22px;border:1px solid #3b82f6;border-radius:18px;background:radial-gradient(ellipse at top right,#1d4ed8 0%,#10172b 42%,#070b14 100%);color:#f8fafc;text-align:center;box-shadow:0 12px 35px rgba(0,0,0,.35)}
+    .card-brand{color:#93c5fd;font-size:11px;font-weight:900;letter-spacing:2px}
+    #cardPortrait{display:block;width:100%;max-height:300px;object-fit:contain;margin:16px auto;border-radius:12px}
+    .card-case{color:#bfdbfe;font-size:10px;letter-spacing:2px}
+    .card-score{display:flex;justify-content:center;align-items:baseline;gap:5px;margin:12px 0;color:#60a5fa;font-size:64px;line-height:1;font-weight:950}
+    .card-score span:last-child{color:#cbd5e1;font-size:22px}
+    #cardVerdict{margin:12px 0;font-size:23px;line-height:1.15}
+    .card-caption{color:#93c5fd;font-size:11px;font-weight:800;letter-spacing:3px}
+    .card-signature{margin-top:20px;padding-top:14px;border-top:1px solid rgba(147,197,253,.35);color:#e2e8f0;font-size:10px;font-weight:800;letter-spacing:2px}
+    .verdict-title{font-size:27px;margin-bottom:8px}
+    .notice{font-size:12px;border-left:3px solid var(--red);padding-left:12px}
+    footer{margin-top:32px;padding-top:18px;border-top:1px solid var(--line);text-align:center;color:var(--muted);font-size:12px}
+    [hidden]{display:none!important}
+    @media(max-width:390px){.dossier-grid{grid-template-columns:1fr}}
   </style>
 </head>
-
 <body>
-  <main class="wrap">
-    <header>
-      <div class="brand">Le <span>Procureur</span></div>
-      <div class="tag">DOSSIER Nº 001</div>
-    </header>
+<main class="wrap">
+  <header>
+    <div class="brand">Le <span>Procureur</span></div>
+    <div class="tag" id="headerTag">TRIBUNAL OUVERT</div>
+  </header>
 
-    <section id="home">
-      <p class="eyebrow">Le tribunal est ouvert</p>
-      <h1>Génie ou<br><span style="color:var(--red)">imposteur ?</span></h1>
+  <section id="home">
+    <p class="eyebrow">Le tribunal est ouvert</p>
+    <h1>Génie ou<br><span style="color:var(--red)">imposteur ?</span></h1>
+    <p>Les exploits ne suffisent pas. Les victoires ne prouvent pas tout. Ici, chaque accusation doit être examinée.</p>
 
-      <p>
-        Les exploits ne suffisent pas. Les victoires ne prouvent pas tout.
-        Ici, chaque accusation doit être examinée.
-      </p>
-
-      <article class="panel">
-        <div class="case-number">AFFAIRE Nº 001 · BLUE LOCK</div>
-        <img class="isagi-photo" src="isagi.jpg" alt="Isagi Yoichi de Blue Lock">
-        <h2 class="case-title">Isagi Yoichi</h2>
-
-        <p>
-          Le joueur mérite-t-il réellement sa réputation ?
-          Ou son intelligence tactique masque-t-elle ses limites ?
-          À toi de rendre ton verdict.
-        </p>
-
-        <div class="divider"></div>
-
-        <p class="notice">
-          Ce test mesure ton opinion à partir de trois questions.
-          Ce n'est pas une évaluation objective du personnage.
-        </p>
-
-        <button class="btn primary" id="start">
-          Ouvrir l'interrogatoire →
-        </button>
-      </article>
-    </section>
-
-    <section id="quiz" hidden>
-      <p class="eyebrow">Interrogatoire en cours</p>
-      <div class="question-count" id="questionCount"></div>
-
-      <div class="progress-track">
-        <div class="progress-bar" id="progressBar"></div>
+    <article class="panel">
+      <div class="case-number">CHOISIS TON DOSSIER</div>
+      <div class="dossier-grid">
+        <div class="dossier-card">
+          <img src="isagi.jpg" alt="Isagi Yoichi" onerror="this.style.display='none'">
+          <h3>Isagi Yoichi</h3>
+          <p>Affaire nº 001 · Blue Lock</p>
+          <button class="btn primary dossier-start" data-dossier="isagi">Interroger Isagi →</button>
+        </div>
+        <div class="dossier-card">
+          <img src="e972f75d034289bdca66e500a745d372.jpg" alt="Naruto Uzumaki" onerror="this.style.display='none'">
+          <h3>Naruto Uzumaki</h3>
+          <p>Affaire nº 002 · Naruto</p>
+          <button class="btn primary dossier-start" data-dossier="naruto">Interroger Naruto →</button>
+        </div>
       </div>
+      <div class="divider"></div>
+      <p class="notice">Ce test mesure ton opinion à partir de trois questions. Ce n'est pas une évaluation objective du personnage.</p>
+    </article>
 
-      <article class="panel">
-        <div class="case-number">QUESTION SOUMISE AU JURY</div>
-        <h2 class="question" id="questionText"></h2>
-        <div id="answers"></div>
+    <article class="panel">
+      <div class="case-number">STATISTIQUES DU TRIBUNAL</div>
+      <h2>Isagi Yoichi</h2>
+      <div class="stats">
+        <div class="stat"><strong id="isagiVisits">0</strong><span>Visites</span></div>
+        <div class="stat"><strong id="isagiStarted">0</strong><span>Débuts</span></div>
+        <div class="stat"><strong id="isagiCompleted">0</strong><span>Verdicts</span></div>
+      </div>
+      <div class="divider"></div>
+      <h2>Naruto Uzumaki</h2>
+      <div class="stats">
+        <div class="stat"><strong id="narutoVisits">0</strong><span>Visites</span></div>
+        <div class="stat"><strong id="narutoStarted">0</strong><span>Débuts</span></div>
+        <div class="stat"><strong id="narutoCompleted">0</strong><span>Verdicts</span></div>
+      </div>
+    </article>
+  </section>
 
-        <div class="nav">
-          <button class="btn secondary" id="previous">← Retour</button>
-          <button class="btn primary" id="next">Suivant →</button>
-        </div>
-      </article>
-    </section>
+  <section id="quiz" hidden>
+    <p class="eyebrow">Interrogatoire en cours</p>
+    <div class="question-count" id="questionCount"></div>
+    <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+    <article class="panel">
+      <div class="case-number">QUESTION SOUMISE AU JURY</div>
+      <h2 class="question" id="questionText"></h2>
+      <div id="answers"></div>
+      <div class="nav">
+        <button class="btn secondary" id="previous">← Retour</button>
+        <button class="btn primary" id="next">Suivant →</button>
+      </div>
+    </article>
+  </section>
 
-    <section id="result" hidden>
-      <p class="eyebrow">Verdict rendu</p>
+  <section id="result" hidden>
+    <p class="eyebrow">Verdict rendu</p>
+    <article class="panel">
+      <div class="case-number">SCORE DE L'ACCUSATION</div>
+      <div class="score"><span id="score">0</span><span style="font-size:30px">%</span></div>
+      <h2 class="verdict-title" id="verdictTitle"></h2>
+      <p id="verdictDescription"></p>
+      <div class="divider"></div>
+      <div id="verdictCard" class="verdict-card">
+        <div class="card-brand">LE PROCUREUR PROVOCATEUR</div>
+        <img id="cardPortrait" src="isagi-card.jpg" alt="Personnage">
+        <div class="card-case" id="cardCase"></div>
+        <div class="card-score"><span id="cardScore">0</span><span>/100</span></div>
+        <h3 id="cardVerdict">Verdict en attente</h3>
+        <p class="card-caption">GÉNIE OU IMPOSTEUR ?</p>
+        <div class="card-signature">LE PROCUREUR PROVOCATEUR</div>
+      </div>
+      <button class="btn secondary" id="downloadCard">Télécharger la carte PNG</button>
+      <button class="btn" id="shareCard">Partager la carte</button>
+      <p class="notice" id="noticeText">Ce score reflète tes réponses, pas une vérité officielle. Deux personnes peuvent examiner les mêmes faits et rendre des verdicts différents.</p>
+      <button class="btn primary" id="share">Partager mon verdict</button>
+      <button class="btn" id="copy">Copier le verdict</button>
+      <button class="btn secondary" id="restart">Recommencer l'interrogatoire</button>
+      <button class="btn secondary" id="backHome">Retour aux dossiers</button>
+    </article>
+  </section>
+  <footer><div>Le Détecteur d'imposteurs</div><div>Conçu et développé par Emmanuel</div></footer>
+</main>
 
-      <article class="panel">
-        <div class="case-number">SCORE DE L'ACCUSATION</div>
+<script>
+"use strict";
 
-        <div class="score">
-          <span id="score">0</span><span style="font-size:30px">%</span>
-        </div>
+const dossiers = {
+  isagi: {
+    name: "Isagi Yoichi",
+    case: "AFFAIRE Nº 001 · BLUE LOCK",
+    image: "isagi-card.jpg",
+    imageAlt: "Isagi Yoichi",
+    file: "verdict-isagi.png",
+    questions: [
+      {text:"Isagi mérite-t-il ses victoires ?",answers:["Oui. Il les mérite pleinement.","Oui, même si certaines circonstances l'aident.","Pas toujours : la chance compte beaucoup.","Non. Ses victoires sont largement discutables."],points:[0,10,20,30]},
+      {text:"Isagi peut-il rivaliser sans avantage tactique ?",answers:["Oui. Il possède d'autres qualités décisives.","Probablement, mais il serait moins dominant.","Difficilement : son intelligence compense ses limites.","Non. Sans cet avantage, il serait dépassé."],points:[0,12,24,35]},
+      {text:"Isagi est-il un véritable génie du football ?",answers:["Oui. Son évolution et ses résultats le prouvent.","Oui, mais il doit encore progresser.","C'est surtout un joueur opportuniste et travailleur.","Non. Sa réputation dépasse son véritable niveau."],points:[0,12,24,35]}
+    ],
+    verdicts:[
+      "Pour toi, les arguments contre Isagi ne suffisent pas. Sa réputation reste défendable.",
+      "Tu reconnais ses qualités, mais certains aspects de ton parcours te laissent sceptique.",
+      "Tu remets sérieusement en question la valeur de ses exploits et les limites de son jeu.",
+      "Ton verdict est sévère : selon tes réponses, la réputation d'Isagi est largement contestable."
+    ]
+  },
+  naruto: {
+    name: "Naruto Uzumaki",
+    case: "AFFAIRE Nº 002 · NARUTO",
+    image: "e972f75d034289bdca66e500a745d372.jpg",
+    imageAlt: "Naruto Uzumaki",
+    file: "verdict-naruto.png",
+    questions: [
+      {text:"Naruto aurait-il atteint le même niveau sans les pouvoirs exceptionnels qu'il a reçus au cours de son histoire ?",answers:["Oui. Son travail et sa détermination auraient suffi.","Probablement, mais son ascension aurait été beaucoup plus difficile.","Difficilement. Ces pouvoirs ont considérablement accéléré sa progression.","Non. Sans ces ressources, il n'aurait jamais atteint ce niveau."],points:[0,10,20,30]},
+      {text:"Quelle part de la puissance de Naruto peut-on réellement attribuer à ses propres efforts ?",answers:["L'essentiel : il a construit sa puissance par son entraînement et son intelligence.","Une grande partie : les pouvoirs reçus l'ont aidé, mais il a su les maîtriser.","Une part limitée : ses dons exceptionnels ont joué un rôle déterminant.","Très peu : ses ressources exceptionnelles expliquent l'essentiel de sa puissance."],points:[0,12,24,35]},
+      {text:"Naruto mérite-t-il pleinement sa place parmi les shinobi les plus puissants de son univers ?",answers:["Absolument. Ses accomplissements et sa maîtrise justifient cette place.","Oui, même si ses avantages exceptionnels doivent être pris en compte.","Partiellement. Sa puissance est réelle, mais son mérite est discutable.","Non. Son statut repose trop largement sur des pouvoirs reçus."],points:[0,12,24,35]}
+    ],
+    verdicts:[
+      "Pour toi, Naruto mérite sa place parmi les shinobi les plus puissants.",
+      "Tu reconnais ses efforts et sa maîtrise, tout en tenant compte des pouvoirs exceptionnels reçus.",
+      "Tu estimes que ses avantages ont largement pesé dans son ascension.",
+      "Ton verdict est sévère : selon toi, son statut repose trop largement sur des pouvoirs reçus."
+    ]
+  }
+};
 
-        <h2 class="verdict-title" id="verdictTitle"></h2>
-        <p id="verdictDescription"></p>
+const STATS_KEY = "detecteur_stats_v1";
+let activeDossier = "isagi";
+let questions = dossiers[activeDossier].questions;
+let current = 0;
+let selections = [];
+let finalScore = 0;
+let currentTitle = "";
+let verdictIndex = 0;
 
-        <div class="divider"></div>
+const $ = id => document.getElementById(id);
+const home = $("home"), quiz = $("quiz"), result = $("result");
 
-        <div id="verdictCard" class="verdict-card">
-          <div class="card-brand">LE PROCUREUR PROVOCATEUR</div>
-          <img id="cardPortrait" src="isagi-card.jpg" alt="Isagi Yoichi">
-          <div class="card-case">AFFAIRE Nº 001 · BLUE LOCK</div>
-          <div class="card-score"><span id="cardScore">0</span><span>/100</span></div>
-          <h3 id="cardVerdict">Verdict en attente</h3>
-          <p class="card-caption">GÉNIE OU IMPOSTEUR ?</p>
-          <div class="card-signature">LE PROCUREUR PROVOCATEUR</div>
-        </div>
-
-        <button class="btn secondary" id="downloadCard">Télécharger la carte PNG</button>
-        <button class="btn" id="shareCard">Partager la carte</button>
-
-        <p class="notice">
-          Ce score reflète tes réponses, pas une vérité officielle sur Isagi.
-          Deux personnes peuvent examiner les mêmes faits et rendre des verdicts différents.
-        </p>
-
-        <button class="btn primary" id="share">Partager mon verdict</button>
-        <button class="btn" id="copy">Copier le verdict</button>
-        <button class="btn secondary" id="restart">
-          Recommencer l'interrogatoire
-        </button>
-      </article>
-    </section>
-
-    <footer>
-      <div>Le Détecteur d'imposteurs</div>
-      <div>Conçu et développé par Emmanuel</div>
-    </footer>
-  </main>
-
-  <script>
-    const questions = [
-      {
-        text: "Isagi mérite-t-il ses victoires ?",
-        answers: [
-          "Oui. Il les mérite pleinement.",
-          "Oui, même si certaines circonstances l'aident.",
-          "Pas toujours : la chance compte beaucoup.",
-          "Non. Ses victoires sont largement discutables."
-        ],
-        points: [0, 10, 20, 30]
-      },
-      {
-        text: "Isagi peut-il rivaliser sans avantage tactique ?",
-        answers: [
-          "Oui. Il possède d'autres qualités décisives.",
-          "Probablement, mais il serait moins dominant.",
-          "Difficilement : son intelligence compense ses limites.",
-          "Non. Sans cet avantage, il serait dépassé."
-        ],
-        points: [0, 12, 24, 35]
-      },
-      {
-        text: "Isagi est-il un véritable génie du football ?",
-        answers: [
-          "Oui. Son évolution et ses résultats le prouvent.",
-          "Oui, mais il doit encore progresser.",
-          "C'est surtout un joueur opportuniste et travailleur.",
-          "Non. Sa réputation dépasse son véritable niveau."
-        ],
-        points: [0, 12, 24, 35]
-      }
-    ];
-
-    const home = document.getElementById("home");
-    const quiz = document.getElementById("quiz");
-    const result = document.getElementById("result");
-    const questionCount = document.getElementById("questionCount");
-    const progressBar = document.getElementById("progressBar");
-    const questionText = document.getElementById("questionText");
-    const answersBox = document.getElementById("answers");
-    const previousButton = document.getElementById("previous");
-    const nextButton = document.getElementById("next");
-
-    let current = 0;
-    let selections = [null, null, null];
-    let finalScore = 0;
-
-    function showScreen(screen) {
-      home.hidden = screen !== "home";
-      quiz.hidden = screen !== "quiz";
-      result.hidden = screen !== "result";
-      window.scrollTo(0, 0);
-    }
-
-    function renderQuestion() {
-      const question = questions[current];
-
-      questionCount.textContent =
-        `QUESTION ${current + 1} SUR ${questions.length}`;
-
-      progressBar.style.width =
-        `${((current + 1) / questions.length) * 100}%`;
-
-      questionText.textContent = question.text;
-      answersBox.replaceChildren();
-
-      question.answers.forEach((answer, index) => {
-        const label = document.createElement("label");
-
-        label.className = "answer" +
-          (selections[current] === index ? " selected" : "");
-
-        const radio = document.createElement("input");
-        radio.type = "radio";
-        radio.name = "answer";
-        radio.value = index;
-        radio.checked = selections[current] === index;
-
-        const text = document.createElement("span");
-        text.textContent = answer;
-
-        radio.addEventListener("change", () => {
-          selections[current] = index;
-          renderQuestion();
-        });
-
-        label.append(radio, text);
-        answersBox.append(label);
-      });
-
-      previousButton.disabled = current === 0;
-
-      nextButton.textContent =
-        current === questions.length - 1
-          ? "Rendre le verdict →"
-          : "Suivant →";
-    }
-
-    function calculateScore() {
-      return selections.reduce((total, answerIndex, questionIndex) => {
-        return total + questions[questionIndex].points[answerIndex];
-      }, 0);
-    }
-
-    function renderVerdict() {
-      finalScore = calculateScore();
-
-      document.getElementById("score").textContent = finalScore;
-
-      let title;
-      let description;
-
-      if (finalScore <= 24) {
-        title = "L'accusation s'effondre";
-        description =
-          "Pour toi, les arguments contre Isagi ne suffisent pas. Sa réputation reste défendable.";
-      } else if (finalScore <= 49) {
-        title = "Le doute subsiste";
-        description =
-          "Tu reconnais ses qualités, mais certains aspects de son parcours te laissent sceptique.";
-      } else if (finalScore <= 74) {
-        title = "L'accusation prend de l'ampleur";
-        description =
-          "Tu remets sérieusement en question la valeur de ses exploits et les limites de son jeu.";
-      } else {
-        title = "Le procureur réclame une condamnation";
-        description =
-          "Ton verdict est sévère : selon tes réponses, la réputation d'Isagi est largement contestable.";
-      }
-
-      document.getElementById("verdictTitle").textContent = title;
-      document.getElementById("verdictDescription").textContent = description;
-
-      document.getElementById("cardScore").textContent = finalScore;
-      document.getElementById("cardVerdict").textContent = title;
-
-      showScreen("result");
-    }
-
-    document.getElementById("start").addEventListener("click", () => {
-      current = 0;
-      selections = [null, null, null];
+function readStats(){
+  try{return JSON.parse(localStorage.getItem(STATS_KEY)) || {};}
+  catch{return {};}
+}
+function saveStats(stats){
+  try{localStorage.setItem(STATS_KEY,JSON.stringify(stats));}
+  catch(error){console.warn("Statistiques non sauvegardées",error);}
+}
+function updateStats(type){
+  const stats=readStats();
+  if(!stats[activeDossier]) stats[activeDossier]={visits:0,started:0,completed:0};
+  stats[activeDossier][type]=(stats[activeDossier][type]||0)+1;
+  saveStats(stats);
+  renderStats();
+}
+function renderStats(){
+  const stats=readStats();
+  for(const id of Object.keys(dossiers)){
+    const s=stats[id]||{};
+    $(id+"Visits").textContent=s.visits||0;
+    $(id+"Started").textContent=s.started||0;
+    $(id+"Completed").textContent=s.completed||0;
+  }
+}
+function showScreen(screen){
+  home.hidden=screen!=="home";
+  quiz.hidden=screen!=="quiz";
+  result.hidden=screen!=="result";
+  window.scrollTo(0,0);
+}
+function selectDossier(id){
+  if(!dossiers[id]) return;
+  activeDossier=id;
+  questions=dossiers[id].questions;
+  $("headerTag").textContent=dossiers[id].case;
+  $("cardPortrait").src=dossiers[id].image;
+  $("cardPortrait").alt=dossiers[id].imageAlt;
+  $("cardCase").textContent=dossiers[id].case;
+  $("noticeText").textContent=`Ce score reflète tes réponses, pas une vérité officielle sur ${dossiers[id].name}. Deux personnes peuvent examiner les mêmes faits et rendre des verdicts différents.`;
+}
+function startDossier(id){
+  selectDossier(id);
+  updateStats("visits");
+  updateStats("started");
+  current=0;
+  selections=Array(questions.length).fill(null);
+  renderQuestion();
+  showScreen("quiz");
+}
+function renderQuestion(){
+  const q=questions[current];
+  $("questionCount").textContent=`QUESTION ${current+1} SUR ${questions.length}`;
+  $("progressBar").style.width=`${((current+1)/questions.length)*100}%`;
+  $("questionText").textContent=q.text;
+  $("answers").replaceChildren();
+  q.answers.forEach((answer,index)=>{
+    const label=document.createElement("label");
+    label.className="answer"+(selections[current]===index?" selected":"");
+    const radio=document.createElement("input");
+    radio.type="radio";radio.name="answer";radio.value=String(index);
+    radio.checked=selections[current]===index;
+    const span=document.createElement("span");span.textContent=answer;
+    radio.addEventListener("change",()=>{
+      selections[current]=index;
       renderQuestion();
-      showScreen("quiz");
     });
+    label.append(radio,span);
+    $("answers").append(label);
+  });
+  $("previous").disabled=current===0;
+  $("next").textContent=current===questions.length-1?"Rendre le verdict →":"Suivant →";
+}
+function calculateScore(){
+  const total=selections.reduce((sum,index,i)=>sum+questions[i].points[index],0);
+  const max=questions.reduce((sum,q)=>sum+Math.max(...q.points),0);
+  return Math.round(total/max*100);
+}
+function renderVerdict(){
+  finalScore=calculateScore();
+  if(finalScore<=24){currentTitle="L'accusation s'effondre";verdictIndex=0;}
+  else if(finalScore<=49){currentTitle="Le doute subsiste";verdictIndex=1;}
+  else if(finalScore<=74){currentTitle="L'accusation prend de l'ampleur";verdictIndex=2;}
+  else{currentTitle="Le procureur réclame une condamnation";verdictIndex=3;}
+  $("score").textContent=finalScore;
+  $("verdictTitle").textContent=currentTitle;
+  $("verdictDescription").textContent=dossiers[activeDossier].verdicts[verdictIndex];
+  $("cardPortrait").src=dossiers[activeDossier].image;
+  $("cardPortrait").alt=dossiers[activeDossier].imageAlt;
+  $("cardCase").textContent=dossiers[activeDossier].case;
+  $("cardScore").textContent=finalScore;
+  $("cardVerdict").textContent=currentTitle;
+  updateStats("completed");
+  showScreen("result");
+}
+function verdictText(){
+  return `Mon verdict sur ${dossiers[activeDossier].name} : ${finalScore}/100 — ${currentTitle}\n${dossiers[activeDossier].verdicts[verdictIndex]}\nEt toi, tu l'aurais condamné ou défendu ?`;
+}
+function loadImage(img){
+  if(img.complete&&img.naturalWidth>0)return Promise.resolve();
+  return new Promise((resolve,reject)=>{
+    img.onload=resolve;
+    img.onerror=()=>reject(new Error("Image introuvable : "+img.src));
+  });
+}
+async function generateVerdictPNG(){
+  const img=$("cardPortrait");
+  await loadImage(img);
+  const canvas=document.createElement("canvas");
+  canvas.width=900;canvas.height=1400;
+  const ctx=canvas.getContext("2d");
+  const bg=ctx.createLinearGradient(0,0,900,1400);
+  bg.addColorStop(0,"#172554");bg.addColorStop(.48,"#0b1120");bg.addColorStop(1,"#030712");
+  ctx.fillStyle=bg;ctx.fillRect(0,0,900,1400);
+  ctx.strokeStyle="#3b82f6";ctx.lineWidth=5;ctx.strokeRect(24,24,852,1352);
+  ctx.textAlign="center";ctx.fillStyle="#93c5fd";ctx.font="bold 27px sans-serif";
+  ctx.fillText("LE PROCUREUR PROVOCATEUR",450,82);
+  ctx.fillStyle="#bfdbfe";ctx.font="22px sans-serif";
+  ctx.fillText(dossiers[activeDossier].case,450,125);
+  const maxW=780,maxH=700;
+  const scale=Math.min(maxW/img.naturalWidth,maxH/img.naturalHeight);
+  const iw=img.naturalWidth*scale,ih=img.naturalHeight*scale;
+  ctx.drawImage(img,(900-iw)/2,155+(maxH-ih)/2,iw,ih);
+  ctx.fillStyle="#60a5fa";ctx.font="bold 140px sans-serif";ctx.fillText(String(finalScore),390,1030);
+  ctx.fillStyle="#cbd5e1";ctx.font="bold 44px sans-serif";ctx.fillText("/100",570,1028);
+  ctx.fillStyle="#f8fafc";ctx.font="bold 38px sans-serif";
+  const words=currentTitle.split(" ");let line="",y=1110;
+  for(const word of words){
+    const test=line?line+" "+word:word;
+    if(ctx.measureText(test).width>780&&line){ctx.fillText(line,450,y);line=word;y+=48;}
+    else line=test;
+  }
+  if(line)ctx.fillText(line,450,y);
+  ctx.fillStyle="#93c5fd";ctx.font="bold 23px sans-serif";ctx.fillText("GÉNIE OU IMPOSTEUR ?",450,1240);
+  ctx.strokeStyle="#334155";ctx.beginPath();ctx.moveTo(90,1270);ctx.lineTo(810,1270);ctx.stroke();
+  ctx.fillStyle="#e2e8f0";ctx.font="bold 22px sans-serif";ctx.fillText("LE PROCUREUR PROVOCATEUR",450,1315);
+  return new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(new Error("Création PNG impossible")),"image/png"));
+}
+function downloadBlob(blob,filename){
+  const url=URL.createObjectURL(blob),a=document.createElement("a");
+  a.href=url;a.download=filename;a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
 
-    previousButton.addEventListener("click", () => {
-      if (current > 0) {
-        current--;
-        renderQuestion();
-      }
-    });
-
-    nextButton.addEventListener("click", () => {
-      if (selections[current] === null) {
-        alert("Choisis une réponse avant de continuer.");
-        return;
-      }
-
-      if (current < questions.length - 1) {
-        current++;
-        renderQuestion();
-      } else {
-        renderVerdict();
-      }
-    });
-
-    function verdictText() {
-      return `Mon verdict sur Isagi Yoichi : ${finalScore}/100 — ` +
-        document.getElementById("verdictTitle").textContent +
-        "\nEt toi, tu l'aurais condamné ou défendu ?";
+document.querySelectorAll(".dossier-start").forEach(btn=>{
+  btn.addEventListener("click",()=>startDossier(btn.dataset.dossier));
+});
+$("previous").addEventListener("click",()=>{
+  if(current>0){current--;renderQuestion();}
+});
+$("next").addEventListener("click",()=>{
+  if(selections[current]===null){alert("Choisis une réponse avant de continuer.");return;}
+  if(current<questions.length-1){current++;renderQuestion();}
+  else renderVerdict();
+});
+$("copy").addEventListener("click",async()=>{
+  try{await navigator.clipboard.writeText(verdictText());alert("Verdict copié !");}
+  catch{prompt("Copie ton verdict :",verdictText());}
+});
+$("share").addEventListener("click",async()=>{
+  try{
+    if(navigator.share)await navigator.share({title:"Mon verdict sur "+dossiers[activeDossier].name,text:verdictText(),url:location.href});
+    else{await navigator.clipboard.writeText(verdictText());alert("Verdict copié. Tu peux maintenant le partager.");}
+  }catch(error){if(error.name!=="AbortError")alert("Le partage n'a pas fonctionné. Essaie le bouton Copier.");}
+});
+$("downloadCard").addEventListener("click",async()=>{
+  try{const blob=await generateVerdictPNG();downloadBlob(blob,dossiers[activeDossier].file);}
+  catch(error){alert("Impossible de créer la carte. Vérifie que l'image du personnage est bien présente dans le dossier.");}
+});
+$("shareCard").addEventListener("click",async()=>{
+  try{
+    const blob=await generateVerdictPNG();
+    const file=new File([blob],dossiers[activeDossier].file,{type:"image/png"});
+    if(navigator.canShare&&navigator.canShare({files:[file]})&&navigator.share){
+      await navigator.share({title:"Mon verdict sur "+dossiers[activeDossier].name,text:"Et toi, tu l'aurais condamné ou défendu ?",files:[file]});
+    }else{
+      downloadBlob(blob,dossiers[activeDossier].file);
+      alert("Le partage direct d'image n'est pas pris en charge ici : la carte a été téléchargée.");
     }
+  }catch(error){if(error.name!=="AbortError")alert("Le partage a échoué. Essaie le téléchargement PNG.");}
+});
+$("restart").addEventListener("click",()=>{
+  current=0;selections=Array(questions.length).fill(null);renderQuestion();showScreen("home");
+});
+$("backHome").addEventListener("click",()=>showScreen("home"));
 
-    document.getElementById("copy").addEventListener("click", async () => {
-      try {
-        await navigator.clipboard.writeText(verdictText());
-        alert("Verdict copié !");
-      } catch {
-        prompt("Copie ton verdict :", verdictText());
-      }
-    });
-
-    document.getElementById("share").addEventListener("click", async () => {
-      try {
-        if (navigator.share) {
-          await navigator.share({
-            title: "Mon verdict sur Isagi",
-            text: verdictText(),
-            url: window.location.href
-          });
-        } else {
-          await navigator.clipboard.writeText(verdictText());
-          alert("Verdict copié. Tu peux maintenant le partager.");
-        }
-      } catch (error) {
-        if (error.name !== "AbortError") {
-          alert("Le partage n'a pas fonctionné. Essaie le bouton Copier.");
-        }
-      }
-    });
-
-    async function generateVerdictPNG() {
-      const image = document.getElementById("cardPortrait");
-      if (!image.complete || image.naturalWidth === 0) {
-        await new Promise((resolve, reject) => {
-          image.onload = resolve;
-          image.onerror = () => reject(new Error("Image Isagi introuvable"));
-        });
-      }
-
-      const canvas = document.createElement("canvas");
-      canvas.width = 900;
-      canvas.height = 1400;
-      const ctx = canvas.getContext("2d");
-
-      const bg = ctx.createLinearGradient(0, 0, 900, 1400);
-      bg.addColorStop(0, "#172554");
-      bg.addColorStop(0.48, "#0b1120");
-      bg.addColorStop(1, "#030712");
-      ctx.fillStyle = bg;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      ctx.strokeStyle = "#3b82f6";
-      ctx.lineWidth = 5;
-      ctx.strokeRect(24, 24, 852, 1352);
-
-      ctx.textAlign = "center";
-      ctx.fillStyle = "#93c5fd";
-      ctx.font = "bold 27px sans-serif";
-      ctx.fillText("LE PROCUREUR PROVOCATEUR", 450, 82);
-
-      ctx.fillStyle = "#bfdbfe";
-      ctx.font = "22px sans-serif";
-      ctx.fillText("AFFAIRE Nº 001 · BLUE LOCK", 450, 125);
-
-      const maxW = 780;
-      const maxH = 700;
-      const scale = Math.min(maxW / image.naturalWidth, maxH / image.naturalHeight);
-      const iw = image.naturalWidth * scale;
-      const ih = image.naturalHeight * scale;
-      ctx.drawImage(image, (900 - iw) / 2, 155 + (maxH - ih) / 2, iw, ih);
-
-      ctx.fillStyle = "#60a5fa";
-      ctx.font = "bold 140px sans-serif";
-      ctx.fillText(String(finalScore), 390, 1030);
-
-      ctx.fillStyle = "#cbd5e1";
-      ctx.font = "bold 44px sans-serif";
-      ctx.fillText("/100", 570, 1028);
-
-      ctx.fillStyle = "#f8fafc";
-      ctx.font = "bold 38px sans-serif";
-      const title = document.getElementById("verdictTitle").textContent;
-      const words = title.split(" ");
-      let line = "";
-      let y = 1110;
-      for (const word of words) {
-        const test = line ? line + " " + word : word;
-        if (ctx.measureText(test).width > 780 && line) {
-          ctx.fillText(line, 450, y);
-          line = word;
-          y += 48;
-        } else {
-          line = test;
-        }
-      }
-      if (line) ctx.fillText(line, 450, y);
-
-      ctx.fillStyle = "#93c5fd";
-      ctx.font = "bold 23px sans-serif";
-      ctx.fillText("GÉNIE OU IMPOSTEUR ?", 450, 1240);
-
-      ctx.strokeStyle = "#334155";
-      ctx.beginPath();
-      ctx.moveTo(90, 1270);
-      ctx.lineTo(810, 1270);
-      ctx.stroke();
-
-      ctx.fillStyle = "#e2e8f0";
-      ctx.font = "bold 22px sans-serif";
-      ctx.fillText("LE PROCUREUR PROVOCATEUR", 450, 1315);
-
-      return new Promise((resolve, reject) => {
-        canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error("Création PNG impossible")), "image/png");
-      });
-    }
-
-    document.getElementById("downloadCard").addEventListener("click", async () => {
-      try {
-        const blob = await generateVerdictPNG();
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = "verdict-isagi.png";
-        link.click();
-        setTimeout(() => URL.revokeObjectURL(url), 1000);
-      } catch (error) {
-        alert("Impossible de créer la carte. Vérifie que l’image d’Isagi est chargée.");
-      }
-    });
-
-    document.getElementById("shareCard").addEventListener("click", async () => {
-      try {
-        const blob = await generateVerdictPNG();
-        const file = new File([blob], "verdict-isagi.png", { type: "image/png" });
-        if (navigator.canShare && navigator.canShare({ files: [file] }) && navigator.share) {
-          await navigator.share({ title: "Mon verdict sur Isagi", text: "Et toi, tu l’aurais condamné ou défendu ?", files: [file] });
-        } else {
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement("a");
-          link.href = url;
-          link.download = "verdict-isagi.png";
-          link.click();
-          setTimeout(() => URL.revokeObjectURL(url), 1000);
-          alert("Le partage direct d’image n’est pas pris en charge ici : la carte a été téléchargée.");
-        }
-      } catch (error) {
-        if (error.name !== "AbortError") alert("Le partage a échoué. Essaie le téléchargement PNG.");
-      }
-    });
-
-    document.getElementById("restart").addEventListener("click", () => {
-      current = 0;
-      selections = [null, null, null];
-      renderQuestion();
-      showScreen("home");
-    });
-  </script>
+renderStats();
+for(const id of Object.keys(dossiers)){
+  activeDossier=id;
+  updateStats("visits");
+}
+activeDossier="isagi";
+selectDossier("isagi");
+</script>
 </body>
 </html>
